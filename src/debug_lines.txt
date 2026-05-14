@@ -1,0 +1,182 @@
+ 980:     metrics: [
+ 981:       { Icon: HeartPulse, label: "Mood", value: "Calm", color: T.primary },
+ 982:       { Icon: BedDouble, label: "Sleep", value: "7 hrs", color: T.clin },
+ 983:       { Icon: Zap, label: "Energy", value: "Good", color: T.success },
+ 984:       { Icon: AlertCircle, label: "Anxiety", value: "Low", color: T.gad },
+ 985:     ],
+ 986:     conditions: [
+ 987:       { code: "F41.1", name: "GAD", trend: "Improving" },
+ 988:       { code: "F32.1", name: "Depression", trend: "Stable" },
+ 989:     ],
+ 990:     screen: { title: "PHQ-9 + GAD-7", due: "Feb 10" },
+ 991:     assistive: "Large labels, simple controls, and clear routines for easier use.",
+ 992:   };
+ 993: 
+ 994:   return(
+ 995:     <div style={{background:T.n100,minHeight:"100%",display:"flex",flexDirection:"column"}}>
+ 996:       <SBar/>
+ 997:       <div style={{background:"linear-gradient(135deg,#4F8EF7,#2D6FD9)",padding:"18px 20px 24px"}}>
+ 998:         <div className="rwb">
+ 999:           <div>
+1000:             <p style={{color:"rgba(255,255,255,.8)",fontSize:13}}>{greet}, {user.name}</p>
+1001:             <h2 style={{fontFamily:"var(--fb)",fontSize:24,fontWeight:800,color:"#fff",marginTop:6,lineHeight:1.1}}>Simple health dashboard</h2>
+1002:           </div>
+1003:           <button className="btn bg bsm" style={{background:"rgba(255,255,255,.18)",color:"#fff",border:"none",borderRadius:50,padding:"12px"}} onClick={()=>go("settings")}><Bell size={18}/></button>
+1004:         </div>
+1005:         <div style={{marginTop:18,display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10}}>
+1006:           <div style={{background:"rgba(255,255,255,.14)",borderRadius:18,padding:14}}>
+1007:             <div className="rwb" style={{gap:10,alignItems:"center"}}>
+1008:               <CheckCircle2 size={18} color="#fff"/>
+1009:               <div>
+1010:                 <div style={{fontSize:12,color:"rgba(255,255,255,.8)",fontWeight:700}}>Check-in streak</div>
+1011:                 <div style={{fontSize:20,fontWeight:800,color:"#fff"}}>{user.streak} days</div>
+1012:               </div>
+1013:             </div>
+1014:           </div>
+1015:           <div style={{background:"rgba(255,255,255,.14)",borderRadius:18,padding:14}}>
+1016:             <div className="rwb" style={{gap:10,alignItems:"center"}}>
+1017:               <CalendarDays size={18} color="#fff"/>
+1018:               <div>
+1019:                 <div style={{fontSize:12,color:"rgba(255,255,255,.8)",fontWeight:700}}>Last check-in</div>
+1020:                 <div style={{fontSize:20,fontWeight:800,color:"#fff"}}>{user.lastCheckIn}</div>
+1021:               </div>
+1022:             </div>
+1023:           </div>
+1024:         </div>
+1025:       </div>
+1026:       <div style={{flex:1,padding:"18px 20px 24px",marginTop:-14,overflow:"auto"}}>
+1027:         <div className="card mb12">
+1028:           <div className="rwb mb10" style={{gap:10,alignItems:"center"}}>
+1029:             <div className="row" style={{gap:10,alignItems:"center"}}>
+1030:               <div style={{width:42,height:42,borderRadius:14,background:T.medSoft,display:"flex",alignItems:"center",justifyContent:"center"}}><Pill size={20} color={T.med}/></div>
+1031:               <div>
+1032:                 <div style={{fontWeight:800,color:T.n900,fontSize:15}}>Medication due</div>
+1033:                 <div style={{fontSize:12,color:T.n500}}>{user.nextMedication.name} · {user.nextMedication.dose}</div>
+1034:               </div>
+1035:             </div>
+1036:             <div style={{fontSize:12,fontWeight:800,color:T.danger}}>{user.nextMedication.status}</div>
+1037:           </div>
+1038:           <div className="rwb" style={{gap:10,alignItems:"center"}}>
+1039:             <button className="btn bp bw" style={{flex:1}} onClick={()=>go("med_adherence")}>Mark as taken</button>
+1040:             <span style={{fontSize:11,color:T.n500}}>{user.nextMedication.due}</span>
+1041:           </div>
+1042:         </div>
+1043:         <div className="card mb12">
+1044:           <div className="rwb mb10" style={{gap:10,alignItems:"center"}}>
+1045:             <HeartPulse size={18} color={T.primary}/>
+1046:             <div>
+1047:               <div style={{fontWeight:800,color:T.n900,fontSize:15}}>Health summary</div>
+1048:               <div style={{fontSize:12,color:T.n500}}>At a glance</div>
+1049:             </div>
+1050:           </div>
+1051:           <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10}}>
+1052:             {user.metrics.map((item)=>(
+1053:               <div key={item.label} style={{borderRadius:14,border:`1px solid ${item.color}22`,padding:14,background:T.surf}}>
+1054:                 <div className="row" style={{gap:8,alignItems:"center"}}><item.Icon size={18} color={item.color}/><div style={{fontSize:11,color:T.n500,fontWeight:700}}>{item.label}</div></div>
+1055:                 <div style={{fontSize:18,fontWeight:800,color:T.n900,marginTop:10}}>{item.value}</div>
+1056:               </div>
+1057:             ))}
+1058:           </div>
+1059:         </div>
+1060:         <div className="card mb12" style={{borderLeft:`4px solid ${T.clin}`}}>
+1061:           <div className="rwb mb10" style={{gap:10,alignItems:"center"}}>
+1062:             <ShieldCheck size={18} color={T.clin}/>
+1063:             <div>
+1064:               <div style={{fontWeight:800,color:T.n900,fontSize:15}}>Assistive access</div>
+1065:               <div style={{fontSize:12,color:T.n500}}>{user.assistive}</div>
+1066:             </div>
+1067:           </div>
+1068:           <button className="btn bs bw" style={{width:"100%"}} onClick={()=>go("settings")}>Open easy mode</button>
+1069:         </div>
+1070:         <div className="card mb12">
+1071:           <div className="rwb mb10" style={{justifyContent:"space-between"}}>
+1072:             <div>
+1073:               <div style={{fontWeight:800,color:T.n900,fontSize:15}}>Active conditions</div>
+1074:               <div style={{fontSize:12,color:T.n500}}>Current care priorities</div>
+1075:             </div>
+1076:             <TrendingUp size={18} color={T.primary}/>
+1077:           </div>
+1078:           {user.conditions.map((cond)=>(
+1079:             <div key={cond.code} className="rwb" style={{justifyContent:"space-between",padding:"9px 0",borderBottom:`1px solid ${T.n100}`}}>
+1080:               <div>
+1081:                 <div style={{fontWeight:700,color:T.n900,fontSize:13}}>{cond.name}</div>
+1082:                 <div style={{fontSize:11,color:T.n500}}>{cond.code}</div>
+1083:               </div>
+1084:               <div style={{fontSize:12,fontWeight:800,color:cond.trend==="Improving"?T.success:T.accent}}>{cond.trend}</div>
+1085:             </div>
+1086:           ))}
+1087:         </div>
+1088:         <div className="card" style={{background:T.phqSoft,border:`1px solid ${T.phq}22`}} onClick={()=>go("screen_hub")}>
+1089:           <div className="rwb" style={{gap:10}}>
+1090:             <div className="row" style={{gap:10,alignItems:"center"}}>
+1091:               <ClipboardList size={18} color={T.phq}/>
+1092:               <div>
+1093:                 <div style={{fontWeight:800,color:T.n900,fontSize:15}}>{user.screen.title}</div>
+1094:                 <div style={{fontSize:12,color:T.n500}}>Due {user.screen.due}</div>
+1095:               </div>
+1096:             </div>
+1097:             <button className="btn bsm" style={{background:T.phq,color:"#fff",border:"none",borderRadius:50,padding:"8px 14px",fontWeight:800}}>Start</button>
+1098:           </div>
+1099:         </div>
+1100:         <div className="card mb12">
+1101:           <div className="rwb mb10" style={{gap:10,alignItems:"center"}}>
+1102:             <HeartPulse size={18} color={T.primary}/>
+1103:             <div>
+1104:               <div style={{fontWeight:800,color:T.n900,fontSize:15}}>Health summary</div>
+1105:               <div style={{fontSize:12,color:T.n500}}>At a glance</div>
+1106:             </div>
+1107:           </div>
+1108:           <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:10}}>
+1109:             {user.metrics.map((item)=>(
+1110:               <div key={item.label} style={{borderRadius:14,border:`1px solid ${item.color}22`,padding:14,background:T.surf}}>
+1111:                 <div className="row" style={{gap:8,alignItems:"center"}}><item.Icon size={18} color={item.color}/><div style={{fontSize:11,color:T.n500,fontWeight:700}}>{item.label}</div></div>
+1112:                 <div style={{fontSize:18,fontWeight:800,color:T.n900,marginTop:10}}>{item.value}</div>
+1113:               </div>
+1114:             ))}
+1115:           </div>
+1116:         </div>
+1117:         <div className="card mb12" style={{borderLeft:`4px solid ${T.clin}`}}>
+1118:           <div className="rwb mb10" style={{gap:10,alignItems:"center"}}>
+1119:             <ShieldCheck size={18} color={T.clin}/>
+1120:             <div>
+1121:               <div style={{fontWeight:800,color:T.n900,fontSize:15}}>Assistive access</div>
+1122:               <div style={{fontSize:12,color:T.n500}}>{user.assistive}</div>
+1123:             </div>
+1124:           </div>
+1125:           <button className="btn bs bw" style={{width:"100%"}} onClick={()=>go("settings")}>Open easy mode</button>
+1126:         </div>
+1127:         <div className="card mb12">
+1128:           <div className="rwb mb10" style={{justifyContent:"space-between"}}>
+1129:             <div>
+1130:               <div style={{fontWeight:800,color:T.n900,fontSize:15}}>Active conditions</div>
+1131:               <div style={{fontSize:12,color:T.n500}}>Current care priorities</div>
+1132:             </div>
+1133:             <TrendingUp size={18} color={T.primary}/>
+1134:           </div>
+1135:           {user.conditions.map((cond)=>(
+1136:             <div key={cond.code} className="rwb" style={{justifyContent:"space-between",padding:"9px 0",borderBottom:`1px solid ${T.n100}`}}>
+1137:               <div>
+1138:                 <div style={{fontWeight:700,color:T.n900,fontSize:13}}>{cond.name}</div>
+1139:                 <div style={{fontSize:11,color:T.n500}}>{cond.code}</div>
+1140:               </div>
+1141:               <div style={{fontSize:12,fontWeight:800,color:cond.trend==="Improving"?T.success:T.accent}}>{cond.trend}</div>
+1142:             </div>
+1143:           ))}
+1144:         </div>
+1145:         <div className="card" style={{background:T.phqSoft,border:`1px solid ${T.phq}22`}} onClick={()=>go("screen_hub")>
+1146:           <div className="rwb" style={{gap:10}}>
+1147:             <div className="row" style={{gap:10,alignItems:"center"}}>
+1148:               <ClipboardList size={18} color={T.phq}/>
+1149:               <div>
+1150:                 <div style={{fontWeight:800,color:T.n900,fontSize:15}}>{user.screen.title}</div>
+1151:                 <div style={{fontSize:12,color:T.n500}}>Due {user.screen.due}</div>
+1152:               </div>
+1153:             </div>
+1154:             <button className="btn bsm" style={{background:T.phq,color:"#fff",border:"none",borderRadius:50,padding:"8px 14px",fontWeight:800}}>Start</button>
+1155:           </div>
+1156:         </div>
+1157:       </div>
+1158:     </div>
+1159:   );
+1160: };
+1161: 
