@@ -48,7 +48,7 @@ export default function AIFlagsScreen({ navigation }) {
               </View>
               <Text style={styles.msgText}>{f.msg}</Text>
               <Text style={styles.dateText}>{f.date}</Text>
-            </TouchableOpacity>
+            </View>
           ))}
         </View>
       </ScrollView>
