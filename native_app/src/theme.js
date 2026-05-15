@@ -40,4 +40,13 @@ export const T = {
   aacP: "#FF69B4",
   aacPu: "#8A2BE2",
   aacR: "#DC143C",
+
+  // Typography (Standardized weights to match Sora/Nunito)
+  fontSora: "Sora_800ExtraBold",
+  fontNunito: "Nunito_700Bold",
+  fontNunitoLight: "Nunito_400Regular",
+  w8: "800",
+  w9: "900",
+  w7: "700",
+  w6: "600",
 };
