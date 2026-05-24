@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import * as Font from 'expo-font';
-import { 
-  Nunito_400Regular, 
-  Nunito_600SemiBold, 
-  Nunito_700Bold, 
-  Nunito_800ExtraBold, 
-  Nunito_900Black 
+import {
+  Nunito_400Regular,
+  Nunito_600SemiBold,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+  Nunito_900Black
 } from '@expo-google-fonts/nunito';
-import { 
-  Sora_400Regular, 
-  Sora_600SemiBold, 
-  Sora_700Bold, 
-  Sora_800ExtraBold 
+import {
+  Sora_400Regular,
+  Sora_600SemiBold,
+  Sora_700Bold,
+  Sora_800ExtraBold
 } from '@expo-google-fonts/sora';
 import AppNavigator from './src/navigation/AppNavigator';
+import { AuthProvider } from './src/context/AuthContext';
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -36,7 +37,7 @@ export default function App() {
         setFontsLoaded(true);
       } catch (e) {
         console.warn(e);
-        setFontsLoaded(true); // Fallback to system fonts if loading fails
+        setFontsLoaded(true);
       }
     }
     loadFonts();
@@ -46,7 +47,9 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <AppNavigator />
+      <AuthProvider>
+        <AppNavigator />
+      </AuthProvider>
     </NavigationContainer>
   );
 }
