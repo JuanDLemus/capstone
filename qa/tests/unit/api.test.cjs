@@ -57,7 +57,10 @@ function createApiService(axiosInstance, secureStoreInstance) {
 
   const api = axiosInstance.create({
     baseURL: 'https://api.echovolt.local',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      'bypass-tunnel-reminder': 'true'
+    },
     timeout: 10000,
   });
 
@@ -99,6 +102,9 @@ function createApiService(axiosInstance, secureStoreInstance) {
 async function run() {
   const axiosMock = new MockAxios();
   const service = createApiService(axiosMock, mockSecureStore);
+
+  // Test 0: Tunnel reminder bypass header configured
+  assert.strictEqual(service.api.config.headers['bypass-tunnel-reminder'], 'true');
 
   // Test 1: No token
   const config1 = { headers: {} };

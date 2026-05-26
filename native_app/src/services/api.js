@@ -29,7 +29,10 @@ export function setUnauthorizedHandler(fn) {
 
 const api = axios.create({
   baseURL: BASE_URL,
-  headers: { 'Content-Type': 'application/json' },
+  headers: { 
+    'Content-Type': 'application/json',
+    'bypass-tunnel-reminder': 'true'
+  },
   timeout: 10000,
 });
 
@@ -63,6 +66,8 @@ api.interceptors.response.use(
       try {
         const { data } = await axios.post(`${BASE_URL}/auth/token/refresh/`, {
           refresh: _refreshToken,
+        }, {
+          headers: { 'bypass-tunnel-reminder': 'true' }
         });
         _accessToken = data.access;
         await SecureStore.setItemAsync('access_token', data.access);
