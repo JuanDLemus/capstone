@@ -128,6 +128,7 @@ function Step({ n, text }) {
 export default function Download() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState(null);
+  const [qrViewMode, setQrViewMode] = useState("image"); // image | terminal
 
   /* MATRIX LOADING PHASE */
   const [phase, setPhase] = useState("matrix"); // matrix | reveal | content
@@ -153,9 +154,10 @@ export default function Download() {
   /* MATRIX → ASCII QR REVEAL SEQUENCE */
   useEffect(() => {
     let t1, t2;
-    if (selected === "expo") {
+    if (selected === "expo" && qrViewMode === "terminal") {
       setPhase("matrix");
-      const lines = FALLBACK_ASCII_QR.split("\n");
+      setMatrixText("");
+      const lines = expoAsciiQr.split("\n");
       let revealedLines = 0;
       t1 = setTimeout(() => {
         const interval = setInterval(() => {
@@ -172,7 +174,7 @@ export default function Download() {
       setPhase("content");
     }
     return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, [selected, expoAsciiQr]);
+  }, [selected, qrViewMode, expoAsciiQr]);
 
   return (
     <div style={{
@@ -277,37 +279,103 @@ export default function Download() {
             background: "rgba(0,255,136,0.04)", border: "1px solid rgba(0,255,136,0.15)",
             borderRadius: 24, padding: 32, marginBottom: 32,
           }}>
-            {/* MATRIX LOADING PANEL */}
-            <div style={{
-              position: "relative", overflow: "hidden", borderRadius: 20,
-              background: "#050505", minHeight: 260,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              marginBottom: 28,
-            }}>
-              {phase === "matrix" && (
-                <>
-                  <MatrixRain running fadeOut={matrixText.length > 0} />
-                  <div style={{
-                    position: "absolute", zIndex: 2, textAlign: "center",
-                    opacity: matrixText.length > 0 ? 0 : 1, transition: "opacity 0.5s",
-                  }}>
-                    <div className="ascii-qr" style={{ fontSize: 11, color: "rgba(0,255,136,0.4)" }}>
-                      LOADING QR...
-                    </div>
-                  </div>
-                  {matrixText && (
-                    <div style={{ position: "absolute", zIndex: 3, padding: 24 }}>
-                      <div className="ascii-qr">{matrixText}</div>
-                    </div>
-                  )}
-                </>
-              )}
-              {(phase === "reveal" || phase === "content") && (
-                <div style={{ padding: "28px 24px" }}>
-                  <div className="ascii-qr">{expoAsciiQr}</div>
-                </div>
-              )}
+            {/* VIEW MODE TABS */}
+            <div style={{ display: "flex", gap: 10, marginBottom: 24 }}>
+              <button 
+                onClick={() => setQrViewMode("image")}
+                style={{
+                  background: qrViewMode === "image" ? "rgba(0,255,136,0.15)" : "transparent",
+                  border: `1px solid ${qrViewMode === "image" ? "#00ff88" : "rgba(255,255,255,0.15)"}`,
+                  color: qrViewMode === "image" ? "#00ff88" : "rgba(255,255,255,0.5)",
+                  borderRadius: 100, padding: "8px 18px", fontSize: 13, fontWeight: 700, cursor: "pointer",
+                  transition: "all 0.2s"
+                }}
+              >
+                📷 Scan QR Image (Fastest)
+              </button>
+              <button 
+                onClick={() => setQrViewMode("terminal")}
+                style={{
+                  background: qrViewMode === "terminal" ? "rgba(0,255,136,0.15)" : "transparent",
+                  border: `1px solid ${qrViewMode === "terminal" ? "#00ff88" : "rgba(255,255,255,0.15)"}`,
+                  color: qrViewMode === "terminal" ? "#00ff88" : "rgba(255,255,255,0.5)",
+                  borderRadius: 100, padding: "8px 18px", fontSize: 13, fontWeight: 700, cursor: "pointer",
+                  transition: "all 0.2s"
+                }}
+              >
+                💻 Terminal View (ASCII)
+              </button>
             </div>
+
+            {qrViewMode === "image" ? (
+              <div style={{
+                background: "#050505", borderRadius: 20, padding: 32,
+                display: "flex", flexDirection: "column", alignItems: "center",
+                border: "1px solid rgba(255,255,255,0.06)", marginBottom: 28,
+              }}>
+                <div style={{
+                  background: "#fff", padding: 16, borderRadius: 16,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.5)", marginBottom: 20,
+                }}>
+                  <img 
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(expoUrl)}`}
+                    alt="Expo Go Tunnel Link QR Code"
+                    style={{ width: 220, height: 220 }}
+                  />
+                </div>
+                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
+                  Expo Tunnel URL:
+                </span>
+                <code 
+                  onClick={() => {
+                    navigator.clipboard.writeText(expoUrl);
+                    alert("Copied to clipboard!");
+                  }}
+                  style={{
+                    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                    padding: "8px 16px", borderRadius: 10, fontSize: 13, color: "#00ff88",
+                    fontFamily: "JetBrains Mono, monospace", cursor: "pointer", transition: "all 0.2s",
+                    textAlign: "center", maxWidth: "100%", overflowX: "auto", wordBreak: "break-all",
+                  }}
+                  title="Click to copy"
+                >
+                  {expoUrl}
+                </code>
+              </div>
+            ) : (
+              /* MATRIX LOADING PANEL */
+              <div style={{
+                position: "relative", overflow: "hidden", borderRadius: 20,
+                background: "#050505", minHeight: 260,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                marginBottom: 28,
+              }}>
+                {phase === "matrix" && (
+                  <>
+                    <MatrixRain running fadeOut={matrixText.length > 0} />
+                    <div style={{
+                      position: "absolute", zIndex: 2, textAlign: "center",
+                      opacity: matrixText.length > 0 ? 0 : 1, transition: "opacity 0.5s",
+                    }}>
+                      <div className="ascii-qr" style={{ fontSize: 11, color: "rgba(0,255,136,0.4)" }}>
+                        LOADING TERMINAL QR...
+                      </div>
+                    </div>
+                    {matrixText && (
+                      <div style={{ position: "absolute", zIndex: 3, padding: 24 }}>
+                        <div className="ascii-qr">{matrixText}</div>
+                      </div>
+                    )}
+                  </>
+                )}
+                {(phase === "reveal" || phase === "content") && (
+                  <div style={{ padding: "28px 24px" }}>
+                    <div className="ascii-qr">{expoAsciiQr}</div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* EXPO STEPS */}
             <h3 style={{ fontFamily: "Sora, sans-serif", fontSize: 18, fontWeight: 700, marginBottom: 20 }}>

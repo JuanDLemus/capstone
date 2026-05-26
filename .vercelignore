@@ -1,0 +1,16 @@
+android-sdk/
+native_app/
+backend/
+former_backend/
+node_modules/
+.git/
+.github/
+dist/
+*.log
+*.zip
+y.txt
+setup_android_sdk.ps1
+build_apk.ps1
+run_qa.ps1
+test.py
+qa/

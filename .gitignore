@@ -11,3 +11,8 @@ pnpm-debug.log*
 .env
 *.zip
 .vercel
+android-sdk/
+native_app/android/
+native_app/node_modules/
+native_app/.expo/
+temp_extract/

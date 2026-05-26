@@ -2,54 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../logo.png";
 
-/* MATRIX RAIN CANVAS */
-function MatrixRain({ opacity = 1 }) {
-  const canvasRef = useRef(null);
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const cols = Math.floor(canvas.width / 18);
-    const drops = Array.from({ length: cols }, () => Math.random() * -100);
-    const chars = "アイウエオカキクケコECHOVOLTHEALTH01";
-
-    const tick = setInterval(() => {
-      ctx.fillStyle = "rgba(0,0,0,0.05)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#00ff88";
-      ctx.font = "15px JetBrains Mono, monospace";
-      drops.forEach((y, i) => {
-        const ch = chars[Math.floor(Math.random() * chars.length)];
-        ctx.fillText(ch, i * 18, y * 18);
-        drops[i] = y > canvas.height / 18 + Math.random() * 20 ? 0 : y + 1;
-      });
-    }, 40);
-
-    return () => {
-      clearInterval(tick);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        position: "fixed", inset: 0, zIndex: 0,
-        opacity, transition: "opacity 1s",
-        pointerEvents: "none",
-      }}
-    />
-  );
-}
-
 /* ANIMATED STAT BADGE */
 function StatBadge({ value, label, delay = 0 }) {
   const [visible, setVisible] = useState(false);
@@ -89,19 +41,12 @@ function Pill({ icon, text }) {
 
 export default function Landing() {
   const navigate = useNavigate();
-  const [matrixOpacity, setMatrixOpacity] = useState(1);
   const [contentVisible, setContentVisible] = useState(false);
 
   useEffect(() => {
     const t1 = setTimeout(() => setContentVisible(true), 300);
     return () => clearTimeout(t1);
   }, []);
-
-  /* FADE OUT MATRIX ON NAVIGATION */
-  const goTo = (path) => {
-    setMatrixOpacity(0);
-    setTimeout(() => navigate(path), 600);
-  };
 
   return (
     <div style={{
@@ -134,9 +79,6 @@ export default function Landing() {
           background-clip: text;
         }
       `}</style>
-
-      {/* MATRIX RAIN BACKGROUND */}
-      <MatrixRain opacity={matrixOpacity} />
 
       {/* GRADIENT OVERLAY */}
       <div style={{
@@ -210,10 +152,10 @@ export default function Landing() {
 
         {/* CTA BUTTONS */}
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center", marginBottom: 64 }}>
-          <button className="cta-primary" onClick={() => goTo("/download")}>
+          <button className="cta-primary" onClick={() => navigate("/download")}>
             Get the App
           </button>
-          <button className="cta-secondary" onClick={() => goTo("/demo")}>
+          <button className="cta-secondary" onClick={() => navigate("/demo")}>
             Web Demo
           </button>
         </div>
