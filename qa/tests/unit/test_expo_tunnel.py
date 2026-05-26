@@ -31,5 +31,10 @@ class TestExpoTunnel(unittest.TestCase):
         self.assertTrue(is_qr_line(qr_line))
         self.assertFalse(is_qr_line(normal_line))
 
+    def test_clean_functions_exist(self):
+        from start_expo_tunnel import clean_port_8081, clean_ngrok
+        self.assertTrue(callable(clean_port_8081))
+        self.assertTrue(callable(clean_ngrok))
+
 if __name__ == "__main__":
     unittest.main()

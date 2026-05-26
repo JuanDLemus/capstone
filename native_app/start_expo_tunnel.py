@@ -4,6 +4,8 @@ import subprocess
 import re
 import json
 import time
+import io
+import qrcode
 
 # IS QR LINE
 def is_qr_line(line):
@@ -80,38 +82,33 @@ def publish_config(url, qr_text):
     except Exception as e:
         print(f"[Auto-Publisher] Error publishing config: {e}")
 
-# PROCESS EXPO OUTPUT
-def process_expo_output(expo_proc):
-    qr_lines = []
-    expo_url = None
-    is_collecting_qr = False
-    pushed = False
+# CLEAN PORT 8081
+def clean_port_8081():
+    try:
+        output = subprocess.check_output("netstat -ano", shell=True, text=True)
+        for line in output.splitlines():
+            if ":8081" in line and "LISTENING" in line:
+                parts = line.strip().split()
+                if len(parts) >= 5:
+                    pid = parts[-1]
+                    print(f"[Auto-Publisher] Killing process {pid} using port 8081...")
+                    subprocess.run(["taskkill", "/F", "/PID", pid], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception as e:
+        print(f"[Auto-Publisher] Error cleaning port 8081: {e}")
 
-    while True:
-        line = expo_proc.stdout.readline()
-        if not line:
-            break
-        sys.stdout.write(line)
-        sys.stdout.flush()
-
-        url = parse_expo_url(line)
-        if url:
-            expo_url = url
-            print(f"\n[Auto-Publisher] Detected Remote Expo Proxy URL: {expo_url}")
-
-        if is_qr_line(line):
-            is_collecting_qr = True
-            qr_lines.append(line.rstrip('\r\n'))
-        else:
-            if is_collecting_qr and len(qr_lines) > 5:
-                is_collecting_qr = False
-                if expo_url and not pushed:
-                    publish_config(expo_url, "\n".join(qr_lines))
-                    pushed = True
+# CLEAN NGROK
+def clean_ngrok():
+    try:
+        subprocess.run(["taskkill", "/F", "/IM", "ngrok.exe"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except Exception:
+        pass
 
 # MAIN ROUTINE
 def main():
-    print("[Auto-Publisher] Starting Ngrok and Expo Metro server...")
+    print("[Auto-Publisher] Cleaning up port 8081 and active Ngrok instances...")
+    clean_port_8081()
+    clean_ngrok()
+    print("[Auto-Publisher] Starting Ngrok...")
     ngrok_proc = None
     expo_proc = None
     try:
@@ -131,8 +128,30 @@ def main():
             return
 
         print(f"[Auto-Publisher] Tunnel active: {ngrok_url}")
+        expo_url = ngrok_url.replace("https://", "exp://")
+        
+        print("[Auto-Publisher] Generating ASCII QR code for Expo Go...")
+        qr = qrcode.QRCode(border=1)
+        qr.add_data(expo_url)
+        qr.make(fit=True)
+        f = io.StringIO()
+        qr.print_ascii(out=f)
+        qr_text = f.getvalue()
+        
+        print("\nScan this QR code to load the app in Expo Go:")
+        print(qr_text)
+        print(f"Expo Go URL: {expo_url}\n")
+        
+        publish_config(expo_url, qr_text)
+        
+        print("[Auto-Publisher] Starting Expo Metro Bundler...")
         expo_proc = start_expo(ngrok_url)
-        process_expo_output(expo_proc)
+        while True:
+            line = expo_proc.stdout.readline()
+            if not line:
+                break
+            sys.stdout.write(line)
+            sys.stdout.flush()
     finally:
         print("[Auto-Publisher] Cleaning up processes...")
         kill_proc(expo_proc)

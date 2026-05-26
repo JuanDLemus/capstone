@@ -145,7 +145,7 @@ body{font-family:var(--fn);background:url('https://images.unsplash.com/photo-155
 let LM_STUDIO_URL = "http://127.0.0.1:1234/api/v1/chat";
 
 // Fetch raw config from GitHub at startup to dynamically update LM Studio URL if overridden
-fetch("https://raw.githubusercontent.com/JuanDLemus/capstone/main/config.json")
+fetch("https://raw.githubusercontent.com/JuanDLemus/capstone/main/config.json?t=" + Date.now())
   .then(res => res.json())
   .then(config => {
     if (config.lm_studio_url) {

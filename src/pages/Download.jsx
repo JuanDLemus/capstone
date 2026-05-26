@@ -105,7 +105,7 @@ function OptionCard({ id, icon, title, subtitle, badge, selected, onClick }) {
         flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
         transition: "all 0.3s",
       }}>
-        {selected && <span style={{ color: "#000", fontSize: 12, fontWeight: 900 }}>✓</span>}
+        {selected && <span style={{ color: "#000", fontSize: 12, fontWeight: 900 }}>V</span>}
       </div>
     </button>
   );
@@ -248,7 +248,7 @@ export default function Download() {
         <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 48 }}>
           <OptionCard
             id="expo"
-            icon="📱"
+            icon=""
             title="Expo Go"
             subtitle="Scan the ASCII QR code with the Expo Go app. Works on Android and iOS. Perfect for 4G/5G testing via Expo Tunnel."
             badge="Recommended"
@@ -257,7 +257,7 @@ export default function Download() {
           />
           <OptionCard
             id="apk"
-            icon="🤖"
+            icon=""
             title="Download APK"
             subtitle="Install the APK directly on your Android device. No Expo Go needed — standalone app."
             selected={selected === "apk"}
@@ -265,7 +265,7 @@ export default function Download() {
           />
           <OptionCard
             id="iphone"
-            icon="🍎"
+            icon=""
             title="iPhone instructions"
             subtitle="Use Expo Go from the App Store and scan the QR code."
             selected={selected === "iphone"}
@@ -326,7 +326,7 @@ export default function Download() {
               borderRadius: 14, padding: "14px 18px", fontSize: 13,
               color: "rgba(255,196,0,0.85)", lineHeight: 1.6,
             }}>
-              ⚠️ The QR code above is generated each time the Expo server starts. If it doesn't work, the team may need to restart Metro and update this page.
+              The QR code above is generated each time the Expo server starts. If it doesn't work, the team may need to restart Metro and update this page.
             </div>
           </div>
         )}
@@ -348,7 +348,7 @@ export default function Download() {
 
             {apkUrl ? (
               <a href={apkUrl} className="dl-btn">
-                ⬇ Download APK
+                Download APK
               </a>
             ) : (
               <div style={{
@@ -356,7 +356,7 @@ export default function Download() {
                 borderRadius: 14, padding: "16px 20px", fontSize: 14,
                 color: "rgba(255,255,255,0.5)", lineHeight: 1.6,
               }}>
-                🔧 APK build in progress. The team is building it now — check back in a few minutes or use Expo Go in the meantime.
+                APK build in progress. The team is building it now — check back in a few minutes or use Expo Go in the meantime.
               </div>
             )}
           </div>
@@ -381,7 +381,7 @@ export default function Download() {
               borderRadius: 14, padding: "14px 18px", fontSize: 13,
               color: "rgba(168,85,247,0.9)", lineHeight: 1.6,
             }}>
-              💡 Tip: iOS native Camera app works too — just point it at the QR code from the Expo Go tab.
+              Tip: iOS native Camera app works too — just point it at the QR code from the Expo Go tab.
             </div>
           </div>
         )}

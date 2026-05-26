@@ -69,7 +69,7 @@ export default function Landing() {
             </div>
             <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 20, padding: 28, textAlign: "center" }}>
               <div style={{ fontSize: 44, fontWeight: 900, color: "#00c4ff", fontFamily: "JetBrains Mono, monospace" }}>1.1B</div>
-              <div style={{ fontSize: 14, color: "#fff", fontWeight: 700, marginTop: 8 }}>Personas con trastornos sin apoyo</div>
+              <div style={{ fontSize: 14, color: "#fff", fontWeight: 700, marginTop: 8 }}>Personas con trastornos</div>
               <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 4 }}>— OMS, 2025</div>
             </div>
             <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 20, padding: 28, textAlign: "center" }}>
@@ -94,21 +94,18 @@ export default function Landing() {
         <div style={{ display: "flex", flexDirection: "column", gap: 32, width: "100%" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 20 }}>
             <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 20, padding: 24 }}>
-              <div style={{ fontSize: 24, marginBottom: 12 }}>🃏</div>
               <h4 style={{ color: "#a855f7", fontSize: 17, marginBottom: 8 }}>Registro Amable</h4>
               <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>
                 Check-in diario interactivo y gamificado usando tarjetas AAC (Augmentative and Alternative Communication) libres de tecnicismos y lenguaje clínico intimidante.
               </p>
             </div>
             <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 20, padding: 24 }}>
-              <div style={{ fontSize: 24, marginBottom: 12 }}>🧠</div>
               <h4 style={{ color: "#a855f7", fontSize: 17, marginBottom: 8 }}>IA y Procesamiento Ético</h4>
               <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>
                 Análisis de lenguaje natural y voz mediante un modelo de lenguaje local que detecta patrones de decaimiento sostenido en el tiempo sin emitir diagnósticos intrusivos.
               </p>
             </div>
             <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 20, padding: 24 }}>
-              <div style={{ fontSize: 24, marginBottom: 12 }}>👥</div>
               <h4 style={{ color: "#a855f7", fontSize: 17, marginBottom: 8 }}>Acompañamiento Familiar</h4>
               <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>
                 Alertas oportunas y preventivas en bucle cerrado directo con el núcleo de cuidadores y familia, permitiendo actuar antes de que ocurra una crisis aguda.
@@ -158,7 +155,7 @@ export default function Landing() {
             </div>
           </div>
           <div style={{ padding: "12px 20px", background: "rgba(255,255,255,0.02)", borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)", fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
-            ⚡ <strong>Nota de Arquitectura:</strong> A diferencia de prototipos heredados que usaban Spring Boot, el backend oficial actual de EchoVolt está unificado en <strong>FastAPI y Python</strong> para lograr tiempos de respuesta de IA inferiores a 800ms.
+            <strong>Nota de Arquitectura:</strong> A diferencia de prototipos heredados que usaban Spring Boot, el backend oficial actual de EchoVolt está unificado en <strong>FastAPI y Python</strong> para lograr tiempos de respuesta de IA inferiores a 800ms.
           </div>
         </div>
       )
@@ -181,15 +178,15 @@ export default function Landing() {
               <h4 style={{ color: "#fff", fontSize: 18, fontWeight: 700 }}>Estrategia de Pruebas Automatizadas</h4>
               <ul style={{ listStyleType: "none", display: "flex", flexDirection: "column", gap: 10, padding: 0 }}>
                 <li style={{ display: "flex", gap: 10, fontSize: 13, color: "rgba(255,255,255,0.75)" }}>
-                  <span style={{ color: "#a855f7" }}>✔</span>
+                  <span style={{ color: "#a855f7" }}>V</span>
                   <strong>Pruebas de MPU & MCU:</strong> pytest con mocks para aislar la comunicación en el bridge y Zephyr OS ztest para el microcontrolador.
                 </li>
                 <li style={{ display: "flex", gap: 10, fontSize: 13, color: "rgba(255,255,255,0.75)" }}>
-                  <span style={{ color: "#a855f7" }}>✔</span>
+                  <span style={{ color: "#a855f7" }}>V</span>
                   <strong>QA Agente Autónomo (Antigravity):</strong> Suite de pruebas ejecutadas de forma autónoma con la tecnología del SDK de Antigravity para validar comportamientos aleatorios, flujos móviles y endpoints de Vercel.
                 </li>
                 <li style={{ display: "flex", gap: 10, fontSize: 13, color: "rgba(255,255,255,0.75)" }}>
-                  <span style={{ color: "#a855f7" }}>✔</span>
+                  <span style={{ color: "#a855f7" }}>V</span>
                   <strong>Pruebas de Estrés & Inyección:</strong> Pruebas continuas de stress contra sockets, fugas de memoria y sanitización estricta de inputs contra prompt injection y OWASP.
                 </li>
               </ul>
@@ -205,28 +202,24 @@ export default function Landing() {
       content: (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, width: "100%" }}>
           <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: 20 }}>
-            <div style={{ fontSize: 22, marginBottom: 8 }}>🔓</div>
             <h4 style={{ color: "#fff", fontSize: 15, fontWeight: 700, marginBottom: 6 }}>Freemium</h4>
             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>
               Acceso a la app base con check-in amable y herramientas básicas de calma para maximizar el impacto social y alcance.
             </p>
           </div>
           <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: 20 }}>
-            <div style={{ fontSize: 22, marginBottom: 8 }}>👑</div>
             <h4 style={{ color: "#fff", fontSize: 15, fontWeight: 700, marginBottom: 6 }}>Premium</h4>
             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>
               Suscripción mensual para monitoreo analítico avanzado, alertas y mensajería en tiempo real con familiares ilimitados.
             </p>
           </div>
           <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: 20 }}>
-            <div style={{ fontSize: 22, marginBottom: 8 }}>⌚</div>
             <h4 style={{ color: "#fff", fontSize: 15, fontWeight: 700, marginBottom: 6 }}>B2B & Wearables</h4>
             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>
               Alianzas con proveedores de salud (EPS/cajas) e integración con smartwatches para telemetría física (ritmo cardíaco, caídas).
             </p>
           </div>
           <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 16, padding: 20 }}>
-            <div style={{ fontSize: 22, marginBottom: 8 }}>🎁</div>
             <h4 style={{ color: "#fff", fontSize: 15, fontWeight: 700, marginBottom: 6 }}>Subvenciones de Salud</h4>
             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", lineHeight: 1.5 }}>
               Acceso a grants gubernamentales y fondos internacionales dedicados a innovación en salud y envejecimiento activo.
@@ -264,7 +257,7 @@ export default function Landing() {
             </div>
           </div>
           <div style={{ padding: 14, background: "rgba(168,85,247,0.03)", border: "1px solid rgba(168,85,247,0.15)", borderRadius: 12, fontSize: 12, color: "rgba(255,255,255,0.7)", textAlign: "center" }}>
-            ℹ <strong>Estructura de Inversión:</strong> Requerimiento de $2,050M COP en 3 rondas escalonadas según hitos de tracción. 0% de deuda bancaria para mitigar riesgos progresivamente.
+            <strong>Estructura de Inversión:</strong> Requerimiento de $2,050M COP en 3 rondas escalonadas según hitos de tracción. 0% de deuda bancaria para mitigar riesgos progresivamente.
           </div>
         </div>
       )
@@ -306,14 +299,12 @@ export default function Landing() {
         <div style={{ display: "flex", flexDirection: "column", gap: 32, width: "100%" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
             <div style={{ background: "rgba(168,85,247,0.03)", border: "1px solid rgba(168,85,247,0.15)", borderRadius: 16, padding: 24 }}>
-              <div style={{ fontSize: 32, marginBottom: 8 }}>🎯</div>
               <h4 style={{ color: "#fff", fontSize: 18, fontWeight: 700, marginBottom: 6 }}>ODS 3: Salud y Bienestar</h4>
               <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>
                 Impacto directo sobre la salud mental y la prevención oportuna del riesgo de suicidio en adultos mayores vulnerables.
               </p>
             </div>
             <div style={{ background: "rgba(168,85,247,0.03)", border: "1px solid rgba(168,85,247,0.15)", borderRadius: 16, padding: 24 }}>
-              <div style={{ fontSize: 32, marginBottom: 8 }}>🏠</div>
               <h4 style={{ color: "#fff", fontSize: 18, fontWeight: 700, marginBottom: 6 }}>ODS 11: Comunidades Sostenibles</h4>
               <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>
                 Fortalece el tejido de cuidado familiar y comunitario, haciendo las viviendas y comunidades entornos seguros para envejecer.
