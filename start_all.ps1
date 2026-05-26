@@ -97,29 +97,61 @@ $ExpoProc = Start-Process -FilePath "powershell.exe" `
     -ArgumentList "-NoExit -Command `"Set-Location '$Root\native_app'; npx expo start --tunnel 2>&1 | Tee-Object -FilePath '$ExpoLog'`"" `
     -PassThru
 
-# WAIT FOR EXPO TUNNEL URL (up to 120 seconds)
+# WAIT FOR "Tunnel ready." IN LOG THEN QUERY NGROK API
 $ExpoUrl = ""
+$TunnelReady = $false
 $Deadline = (Get-Date).AddSeconds(120)
-Write-Host "  Watching expo_tunnel.log for exp:// URL..." -ForegroundColor DarkGray
+Write-Host "  Waiting for 'Tunnel ready.' in expo_tunnel.log..." -ForegroundColor DarkGray
 
 while ((Get-Date) -lt $Deadline) {
     Start-Sleep -Seconds 2
     if (Test-Path $ExpoLog) {
         $raw = Get-Content $ExpoLog -Raw -ErrorAction SilentlyContinue
-        if ($raw -match "(exp://[a-zA-Z0-9][a-zA-Z0-9.-]{3,}(?::\d+)?(?:/[^\s]*)?)") {
-            $candidate = $Matches[1]
-            # REJECT LAN/LOOPBACK ADDRESSES
-            if ($candidate -notmatch "192\.168\.|127\.0\.0\.1|localhost|10\.\d|172\.(1[6-9]|2\d|3[01])\.") {
-                $ExpoUrl = $candidate
-                break
-            }
+        if ($raw -match "Tunnel ready") {
+            $TunnelReady = $true
+            Write-Host "  Expo tunnel is up. Querying ngrok API..." -ForegroundColor DarkGray
+            break
         }
     }
 }
 
-if ($ExpoUrl) {
-    Write-Host "`n  Expo tunnel URL: $ExpoUrl" -ForegroundColor Green
+if ($TunnelReady) {
+    # QUERY NGROK REST API - tries ports 4040-4045
+    $NgrokUrl = ""
+    foreach ($ngrokPort in @(4040, 4041, 4042, 4043, 4044, 4045)) {
+        try {
+            $resp = Invoke-RestMethod "http://localhost:$ngrokPort/api/tunnels" -TimeoutSec 3 -ErrorAction Stop
+            $https = $resp.tunnels | Where-Object { $_.proto -eq "https" } | Select-Object -First 1
+            if ($https) {
+                $NgrokUrl = $https.public_url
+                Write-Host "  ngrok API found on port $ngrokPort : $NgrokUrl" -ForegroundColor DarkGray
+                break
+            }
+        } catch { }
+    }
 
+    if ($NgrokUrl) {
+        # CONVERT https://abc.ngrok-free.app -> exp://abc.ngrok-free.app:80
+        $ExpoUrl = ($NgrokUrl -replace "^https://", "exp://") + ":80"
+        Write-Host "`n  Expo tunnel URL: $ExpoUrl" -ForegroundColor Green
+    } else {
+        Write-Host "  ngrok API not reachable on ports 4040-4045." -ForegroundColor Yellow
+        Write-Host "  Trying to extract URL from log file..." -ForegroundColor DarkGray
+        # FALLBACK: try to find exp:// in log anyway
+        $raw = Get-Content $ExpoLog -Raw -ErrorAction SilentlyContinue
+        if ($raw -match "(exp://[a-zA-Z0-9][a-zA-Z0-9._-]{3,}(?::\d+)?)") {
+            $candidate = $Matches[1]
+            if ($candidate -notmatch "127\.0\.0\.1|localhost") {
+                $ExpoUrl = $candidate
+                Write-Host "  Fallback URL from log: $ExpoUrl" -ForegroundColor DarkGray
+            }
+        }
+    }
+} else {
+    Write-Host "`n  WARNING: Expo tunnel did not become ready within 2 minutes." -ForegroundColor Yellow
+}
+
+if ($ExpoUrl) {
     # GENERATE GRAPHICAL QR CODE URL (for display and web portal)
     $QrImgUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&color=000000&bgcolor=ffffff&data=" + [Uri]::EscapeDataString($ExpoUrl)
 
@@ -158,8 +190,7 @@ print(buf.getvalue(), end='')
     Write-Host "`n  Open the web portal download page to scan the live QR." -ForegroundColor White
 
 } else {
-    Write-Host "`n  WARNING: Expo tunnel URL not captured within 2 minutes." -ForegroundColor Yellow
-    Write-Host "  Check the Expo window manually for the QR code." -ForegroundColor Yellow
+    Write-Host "`n  Expo URL not captured. Scan the QR directly from the Expo window." -ForegroundColor Yellow
 }
 
 Write-Host "`n============================================" -ForegroundColor Cyan
