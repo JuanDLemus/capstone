@@ -1,8 +1,15 @@
 {
   "expo": {
-    "name": "native_app",
+    "name": "EchoVolt",
     "slug": "native_app",
     "version": "1.0.0",
+    "scheme": "echovolt",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "enabled": false
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

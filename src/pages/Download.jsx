@@ -4,24 +4,10 @@ import { useNavigate } from "react-router-dom";
 /* CONFIG SOURCE — fetched from GitHub raw on every load */
 const CONFIG_URL = "https://raw.githubusercontent.com/JuanDLemus/capstone/main/config.json";
 
-/* CURRENT EXPO ASCII QR (fallback if config.json not yet updated) */
-const FALLBACK_ASCII_QR = `▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-█ ▄▄▄▄▄ █▀█ █▄█▄▀██ ▄▄▄▄▄ █
-█ █   █ █▀▀▀█ ▀▄█▄█ █   █ █
-█ █▄▄▄█ █▀ █▀▀▄▄▀██ █▄▄▄█ █
-█▄▄▄▄▄▄▄█▄▀ ▀▄█ ▀▄█▄▄▄▄▄▄▄█
-█▄   ▄▀▄▄▄▄▀▄▀▄▀▄▄▄█▄█ █ ██
-█▄█▀██ ▄▀██▄█▀██▄█▄██▄ █▄ █
-█ ▄▄▄  ▄█▄ ▄█▄ ▀▄▄▀▄▄▄▀ ▀██
-█ █▄▀█ ▄▀▄█▀ ▄▄█▄▀▀ ▄▀ ▄  █
-█▄██▄▄▄▄▄▀█ ▄  ▀▀ ▄▄▄ ▄ ▄▄█
-█ ▄▄▄▄▄ █▄ ▄█▀██▀ █▄█ ▀▄  █
-█ █   █ █ ▄▄▀▀▄▀ ▄▄   ▄ ▀▀█
-█ █▄▄▄█ █ ▄▀█ ██▄  ▀▀█▀▄█ █
-█▄▄▄▄▄▄▄█▄█▄▄█▄█▄██████▄▄▄█`;
 
-/* EXPO TUNNEL URL (fallback) */
-const FALLBACK_EXPO_URL = "exp://u.expo.dev/update";
+/* EXPO TUNNEL URL (fallback \u2014 empty until start_all.ps1 populates it) */
+const FALLBACK_EXPO_URL = "";
+
 
 /* MATRIX RAIN CANVAS */
 function MatrixRain({ running = true, fadeOut = false }) {
@@ -141,20 +127,28 @@ export default function Download() {
   const [matrixText, setMatrixText] = useState("");
 
   /* CONFIG FROM GITHUB */
-  const [expoAsciiQr, setExpoAsciiQr] = useState(FALLBACK_ASCII_QR);
+  const [expoAsciiQr, setExpoAsciiQr] = useState("");
   const [expoUrl, setExpoUrl] = useState(FALLBACK_EXPO_URL);
   const [apkUrl, setApkUrl] = useState(null);
 
-  /* FETCH LIVE CONFIG */
-  useEffect(() => {
+  /* FETCH LIVE CONFIG — polls every 10s while expo URL is empty */
+  const fetchConfig = () => {
     fetch(CONFIG_URL + "?t=" + Date.now())
       .then(r => r.json())
       .then(cfg => {
         if (cfg.expo_ascii_qr) setExpoAsciiQr(cfg.expo_ascii_qr);
-        if (cfg.expo_tunnel_url) setExpoUrl(cfg.expo_tunnel_url);
+        setExpoUrl(cfg.expo_tunnel_url || "");
         if (cfg.apk_download_url) setApkUrl(cfg.apk_download_url);
       })
       .catch(() => {});
+  };
+
+  useEffect(() => {
+    fetchConfig();
+    const poll = setInterval(() => {
+      fetchConfig();
+    }, 10000);
+    return () => clearInterval(poll);
   }, []);
 
   /* MATRIX → ASCII QR REVEAL SEQUENCE */
@@ -285,34 +279,33 @@ export default function Download() {
             background: "rgba(168,85,247,0.04)", border: "1px solid rgba(168,85,247,0.15)",
             borderRadius: 24, padding: 32, marginBottom: 32,
           }}>
-            {/* MATRIX LOADING PANEL */}
+            {/* QR / STATUS PANEL */}
             <div style={{
               position: "relative", overflow: "hidden", borderRadius: 20,
               background: "#050505", minHeight: 260,
               display: "flex", alignItems: "center", justifyContent: "center",
               marginBottom: 28,
             }}>
-              {phase === "matrix" && (
-                <>
-                  <MatrixRain running fadeOut={matrixText.length > 0} />
+              {!expoUrl ? (
+                /* SERVER NOT RUNNING STATE */
+                <div style={{ textAlign: "center", padding: 32 }}>
                   <div style={{
-                    position: "absolute", zIndex: 2, textAlign: "center",
-                    opacity: matrixText.length > 0 ? 0 : 1, transition: "opacity 0.5s",
-                  }}>
-                    <div className="ascii-qr" style={{ fontSize: 11, color: "rgba(168,85,247,0.4)" }}>
-                      LOADING TERMINAL QR...
-                    </div>
+                    width: 64, height: 64, borderRadius: "50%",
+                    background: "rgba(255,196,0,0.1)", border: "1px solid rgba(255,196,0,0.3)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    margin: "0 auto 16px", fontSize: 28,
+                  }}>?</div>
+                  <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 13, color: "rgba(255,196,0,0.9)", marginBottom: 8 }}>
+                    Dev server not running
                   </div>
-                  {matrixText && (
-                    <div style={{ position: "absolute", zIndex: 3, padding: 24 }}>
-                      <div className="ascii-qr">{matrixText}</div>
-                    </div>
-                  )}
-                </>
-              )}
-              {(phase === "reveal" || phase === "content") && (
+                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", lineHeight: 1.6 }}>
+                    Run <span style={{ fontFamily: "JetBrains Mono, monospace", color: "rgba(168,85,247,0.8)" }}>start_all.ps1</span> to start Metro and generate the live QR. This page polls every 10 seconds.
+                  </div>
+                </div>
+              ) : (
+                /* QR CODE STATE */
                 <div style={{ padding: "28px 24px", display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
-                  <img 
+                  <img
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&color=a855f7&bgcolor=050505&data=${encodeURIComponent(expoUrl)}`}
                     alt="Expo Go QR Code"
                     style={{ width: 220, height: 220, borderRadius: 16, border: "2px solid rgba(168,85,247,0.3)", boxShadow: "0 0 30px rgba(168,85,247,0.15)" }}
