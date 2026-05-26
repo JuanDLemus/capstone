@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 /* CONFIG SOURCE — fetched from GitHub raw on every load */
@@ -43,7 +43,7 @@ function MatrixRain({ running = true, fadeOut = false }) {
       if (!running_) return;
       ctx.fillStyle = "rgba(0,0,0,0.08)";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#00ff88";
+      ctx.fillStyle = "#a855f7";
       ctx.font = "13px JetBrains Mono, monospace";
       drops.forEach((y, i) => {
         const ch = chars[Math.floor(Math.random() * chars.length)];
@@ -73,13 +73,14 @@ function OptionCard({ id, icon, title, subtitle, badge, selected, onClick }) {
     <button
       onClick={() => onClick(id)}
       style={{
-        background: selected ? "rgba(0,255,136,0.08)" : "rgba(255,255,255,0.03)",
-        border: `2px solid ${selected ? "rgba(0,255,136,0.5)" : "rgba(255,255,255,0.1)"}`,
+        background: selected ? "rgba(168,85,247,0.08)" : "rgba(255,255,255,0.03)",
+        border: `2px solid ${selected ? "rgba(168,85,247,0.5)" : "rgba(255,255,255,0.1)"}`,
         borderRadius: 20, padding: "20px 24px",
         cursor: "pointer", textAlign: "left", transition: "all 0.3s",
         display: "flex", alignItems: "center", gap: 18,
         transform: selected ? "scale(1.02)" : "scale(1)",
-        boxShadow: selected ? "0 0 30px rgba(0,255,136,0.12)" : "none",
+        boxShadow: selected ? "0 0 30px rgba(168,85,247,0.12)" : "none",
+        width: "100%",
       }}
     >
       <span style={{ fontSize: 36 }}>{icon}</span>
@@ -88,8 +89,8 @@ function OptionCard({ id, icon, title, subtitle, badge, selected, onClick }) {
           <span style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: 17, color: "#fff" }}>{title}</span>
           {badge && (
             <span style={{
-              background: "rgba(0,255,136,0.15)", color: "#00ff88",
-              border: "1px solid rgba(0,255,136,0.3)", borderRadius: 100,
+              background: "rgba(168,85,247,0.15)", color: "#a855f7",
+              border: "1px solid rgba(168,85,247,0.3)", borderRadius: 100,
               padding: "2px 10px", fontSize: 10, fontWeight: 800, letterSpacing: 1,
               textTransform: "uppercase",
             }}>{badge}</span>
@@ -99,8 +100,8 @@ function OptionCard({ id, icon, title, subtitle, badge, selected, onClick }) {
       </div>
       <div style={{
         width: 22, height: 22, borderRadius: "50%",
-        border: `2px solid ${selected ? "#00ff88" : "rgba(255,255,255,0.2)"}`,
-        background: selected ? "#00ff88" : "transparent",
+        border: `2px solid ${selected ? "#a855f7" : "rgba(255,255,255,0.2)"}`,
+        background: selected ? "#a855f7" : "transparent",
         flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
         transition: "all 0.3s",
       }}>
@@ -116,9 +117,9 @@ function Step({ n, text }) {
     <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
       <div style={{
         width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
-        background: "rgba(0,255,136,0.15)", border: "1px solid rgba(0,255,136,0.4)",
+        background: "rgba(168,85,247,0.15)", border: "1px solid rgba(168,85,247,0.4)",
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontFamily: "JetBrains Mono, monospace", fontSize: 12, fontWeight: 700, color: "#00ff88",
+        fontFamily: "JetBrains Mono, monospace", fontSize: 12, fontWeight: 700, color: "#a855f7",
       }}>{n}</div>
       <p style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", lineHeight: 1.6, paddingTop: 4 }}>{text}</p>
     </div>
@@ -128,7 +129,6 @@ function Step({ n, text }) {
 export default function Download() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState(null);
-  const [qrViewMode, setQrViewMode] = useState("image"); // image | terminal
 
   /* MATRIX LOADING PHASE */
   const [phase, setPhase] = useState("matrix"); // matrix | reveal | content
@@ -154,7 +154,7 @@ export default function Download() {
   /* MATRIX → ASCII QR REVEAL SEQUENCE */
   useEffect(() => {
     let t1, t2;
-    if (selected === "expo" && qrViewMode === "terminal") {
+    if (selected === "expo") {
       setPhase("matrix");
       setMatrixText("");
       const lines = expoAsciiQr.split("\n");
@@ -174,7 +174,7 @@ export default function Download() {
       setPhase("content");
     }
     return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, [selected, qrViewMode, expoAsciiQr]);
+  }, [selected, expoAsciiQr]);
 
   return (
     <div style={{
@@ -186,25 +186,25 @@ export default function Download() {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         .dl-btn {
           display: inline-flex; align-items: center; gap: 10px;
-          background: linear-gradient(135deg, #00ff88, #00c4ff);
+          background: linear-gradient(135deg, #a855f7, #00c4ff);
           color: #000; border: none; border-radius: 100px;
           padding: 14px 32px; font-size: 16px; font-weight: 900;
           cursor: pointer; font-family: Sora, sans-serif;
           transition: all 0.3s; text-decoration: none;
-          box-shadow: 0 0 24px rgba(0,255,136,0.3);
+          box-shadow: 0 0 24px rgba(168,85,247,0.3);
         }
-        .dl-btn:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(0,255,136,0.5); }
+        .dl-btn:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(168,85,247,0.5); }
         .back-btn {
           background: transparent; border: 1px solid rgba(255,255,255,0.15);
           color: rgba(255,255,255,0.5); border-radius: 100px;
           padding: 8px 20px; font-size: 13px; font-weight: 700;
           cursor: pointer; transition: all 0.2s; font-family: Nunito, sans-serif;
         }
-        .back-btn:hover { color: #00ff88; border-color: rgba(0,255,136,0.4); }
+        .back-btn:hover { color: #a855f7; border-color: rgba(168,85,247,0.4); }
         .ascii-qr {
           font-family: 'JetBrains Mono', monospace;
           font-size: clamp(8px, 1.8vw, 13px);
-          line-height: 1.15; white-space: pre; color: #00ff88;
+          line-height: 1.15; white-space: pre; color: #a855f7;
           text-align: center; letter-spacing: 0.05em;
         }
       `}</style>
@@ -219,7 +219,7 @@ export default function Download() {
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <button className="back-btn" onClick={() => navigate("/")}>← Back</button>
           <span style={{ fontFamily: "Sora, sans-serif", fontWeight: 800, fontSize: 18 }}>
-            <span style={{ color: "#00ff88" }}>Echo</span>Volt
+            <span style={{ color: "#a855f7" }}>Echo</span>Volt
           </span>
         </div>
         <button className="back-btn" onClick={() => navigate("/demo")}>Web Demo →</button>
@@ -235,7 +235,7 @@ export default function Download() {
           }}>
             Get EchoVolt on{" "}
             <span style={{
-              background: "linear-gradient(135deg, #00ff88, #00c4ff)",
+              background: "linear-gradient(135deg, #a855f7, #00c4ff)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
             }}>your device</span>
           </h1>
@@ -250,7 +250,7 @@ export default function Download() {
             id="expo"
             icon="📱"
             title="Expo Go"
-            subtitle="Scan a QR code with the Expo Go app. Works on Android and iOS. Requires Expo Go to be installed."
+            subtitle="Scan the ASCII QR code with the Expo Go app. Works on Android and iOS. Perfect for 4G/5G testing via Expo Tunnel."
             badge="Recommended"
             selected={selected === "expo"}
             onClick={setSelected}
@@ -265,9 +265,9 @@ export default function Download() {
           />
           <OptionCard
             id="iphone"
-            icon=""
-            title="iPhone (TestFlight)"
-            subtitle="Use Expo Go from the App Store and scan the QR, or request a TestFlight link from the team."
+            icon="🍎"
+            title="iPhone instructions"
+            subtitle="Use Expo Go from the App Store and scan the QR code."
             selected={selected === "iphone"}
             onClick={setSelected}
           />
@@ -276,106 +276,40 @@ export default function Download() {
         {/* DETAIL PANELS */}
         {selected === "expo" && (
           <div style={{
-            background: "rgba(0,255,136,0.04)", border: "1px solid rgba(0,255,136,0.15)",
+            background: "rgba(168,85,247,0.04)", border: "1px solid rgba(168,85,247,0.15)",
             borderRadius: 24, padding: 32, marginBottom: 32,
           }}>
-            {/* VIEW MODE TABS */}
-            <div style={{ display: "flex", gap: 10, marginBottom: 24 }}>
-              <button 
-                onClick={() => setQrViewMode("image")}
-                style={{
-                  background: qrViewMode === "image" ? "rgba(0,255,136,0.15)" : "transparent",
-                  border: `1px solid ${qrViewMode === "image" ? "#00ff88" : "rgba(255,255,255,0.15)"}`,
-                  color: qrViewMode === "image" ? "#00ff88" : "rgba(255,255,255,0.5)",
-                  borderRadius: 100, padding: "8px 18px", fontSize: 13, fontWeight: 700, cursor: "pointer",
-                  transition: "all 0.2s"
-                }}
-              >
-                📷 Scan QR Image (Fastest)
-              </button>
-              <button 
-                onClick={() => setQrViewMode("terminal")}
-                style={{
-                  background: qrViewMode === "terminal" ? "rgba(0,255,136,0.15)" : "transparent",
-                  border: `1px solid ${qrViewMode === "terminal" ? "#00ff88" : "rgba(255,255,255,0.15)"}`,
-                  color: qrViewMode === "terminal" ? "#00ff88" : "rgba(255,255,255,0.5)",
-                  borderRadius: 100, padding: "8px 18px", fontSize: 13, fontWeight: 700, cursor: "pointer",
-                  transition: "all 0.2s"
-                }}
-              >
-                💻 Terminal View (ASCII)
-              </button>
-            </div>
-
-            {qrViewMode === "image" ? (
-              <div style={{
-                background: "#050505", borderRadius: 20, padding: 32,
-                display: "flex", flexDirection: "column", alignItems: "center",
-                border: "1px solid rgba(255,255,255,0.06)", marginBottom: 28,
-              }}>
-                <div style={{
-                  background: "#fff", padding: 16, borderRadius: 16,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.5)", marginBottom: 20,
-                }}>
-                  <img 
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(expoUrl)}`}
-                    alt="Expo Go Tunnel Link QR Code"
-                    style={{ width: 220, height: 220 }}
-                  />
-                </div>
-                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-                  Expo Tunnel URL:
-                </span>
-                <code 
-                  onClick={() => {
-                    navigator.clipboard.writeText(expoUrl);
-                    alert("Copied to clipboard!");
-                  }}
-                  style={{
-                    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
-                    padding: "8px 16px", borderRadius: 10, fontSize: 13, color: "#00ff88",
-                    fontFamily: "JetBrains Mono, monospace", cursor: "pointer", transition: "all 0.2s",
-                    textAlign: "center", maxWidth: "100%", overflowX: "auto", wordBreak: "break-all",
-                  }}
-                  title="Click to copy"
-                >
-                  {expoUrl}
-                </code>
-              </div>
-            ) : (
-              /* MATRIX LOADING PANEL */
-              <div style={{
-                position: "relative", overflow: "hidden", borderRadius: 20,
-                background: "#050505", minHeight: 260,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                marginBottom: 28,
-              }}>
-                {phase === "matrix" && (
-                  <>
-                    <MatrixRain running fadeOut={matrixText.length > 0} />
-                    <div style={{
-                      position: "absolute", zIndex: 2, textAlign: "center",
-                      opacity: matrixText.length > 0 ? 0 : 1, transition: "opacity 0.5s",
-                    }}>
-                      <div className="ascii-qr" style={{ fontSize: 11, color: "rgba(0,255,136,0.4)" }}>
-                        LOADING TERMINAL QR...
-                      </div>
+            {/* MATRIX LOADING PANEL */}
+            <div style={{
+              position: "relative", overflow: "hidden", borderRadius: 20,
+              background: "#050505", minHeight: 260,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              marginBottom: 28,
+            }}>
+              {phase === "matrix" && (
+                <>
+                  <MatrixRain running fadeOut={matrixText.length > 0} />
+                  <div style={{
+                    position: "absolute", zIndex: 2, textAlign: "center",
+                    opacity: matrixText.length > 0 ? 0 : 1, transition: "opacity 0.5s",
+                  }}>
+                    <div className="ascii-qr" style={{ fontSize: 11, color: "rgba(168,85,247,0.4)" }}>
+                      LOADING TERMINAL QR...
                     </div>
-                    {matrixText && (
-                      <div style={{ position: "absolute", zIndex: 3, padding: 24 }}>
-                        <div className="ascii-qr">{matrixText}</div>
-                      </div>
-                    )}
-                  </>
-                )}
-                {(phase === "reveal" || phase === "content") && (
-                  <div style={{ padding: "28px 24px" }}>
-                    <div className="ascii-qr">{expoAsciiQr}</div>
                   </div>
-                )}
-              </div>
-            )}
+                  {matrixText && (
+                    <div style={{ position: "absolute", zIndex: 3, padding: 24 }}>
+                      <div className="ascii-qr">{matrixText}</div>
+                    </div>
+                  )}
+                </>
+              )}
+              {(phase === "reveal" || phase === "content") && (
+                <div style={{ padding: "28px 24px" }}>
+                  <div className="ascii-qr">{expoAsciiQr}</div>
+                </div>
+              )}
+            </div>
 
             {/* EXPO STEPS */}
             <h3 style={{ fontFamily: "Sora, sans-serif", fontSize: 18, fontWeight: 700, marginBottom: 20 }}>
