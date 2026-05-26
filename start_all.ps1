@@ -93,8 +93,8 @@ Write-Host "This generates a real Expo Go link. Waiting for tunnel URL..." -Fore
 $ExpoLog = "$Root\expo_tunnel.log"
 Remove-Item $ExpoLog -ErrorAction SilentlyContinue
 
-$ExpoProc = Start-Process -FilePath "cmd.exe" `
-    -ArgumentList "/k cd /d `"$Root\native_app`" && npx expo start --tunnel 2>&1 | tee `"$ExpoLog`"" `
+$ExpoProc = Start-Process -FilePath "powershell.exe" `
+    -ArgumentList "-NoExit -Command `"Set-Location '$Root\native_app'; npx expo start --tunnel 2>&1 | Tee-Object -FilePath '$ExpoLog'`"" `
     -PassThru
 
 # WAIT FOR EXPO TUNNEL URL (up to 120 seconds)
