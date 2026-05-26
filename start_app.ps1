@@ -96,10 +96,9 @@ if ($url) {
 Write-Host "Starting Web Prototype in new window..." -ForegroundColor Cyan
 Start-Process -FilePath "cmd.exe" -ArgumentList "/k npm run dev"
 
-# START MOBILE APP WITH TUNNEL (globally accessible QR)
-Write-Host "Starting Mobile App (Expo) with tunnel in new window..." -ForegroundColor Cyan
-Write-Host "IMPORTANT: Copy the ASCII QR from the Expo window and update config.json -> expo_ascii_qr" -ForegroundColor Yellow
-Start-Process -FilePath "cmd.exe" -ArgumentList "/k cd native_app && npx expo start --tunnel"
+# START MOBILE APP WITH TUNNEL (globally accessible QR + auto-publisher)
+Write-Host "Starting Mobile App (Expo) and auto-publishing remote tunnel URL/QR..." -ForegroundColor Cyan
+Start-Process -FilePath "cmd.exe" -ArgumentList "/k cd native_app && python start_expo_tunnel.py"
 
 Write-Host "Dev servers started in separate interactive windows." -ForegroundColor Green
 Write-Host "After Expo tunnel QR appears: update config.json and push to GitHub." -ForegroundColor Cyan
