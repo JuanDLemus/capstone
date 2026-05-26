@@ -142,10 +142,17 @@ body{font-family:var(--fn);background:url('https://images.unsplash.com/photo-155
 .aacwd{font-size:10px;font-weight:800;text-align:center;line-height:1.2}
 `;
 
-/* 
- GLOBAL AI CONSTANTS
- */
-const LM_STUDIO_URL = "http://127.0.0.1:1234/api/v1/chat";
+let LM_STUDIO_URL = "http://127.0.0.1:1234/api/v1/chat";
+
+// Fetch raw config from GitHub at startup to dynamically update LM Studio URL if overridden
+fetch("https://raw.githubusercontent.com/JuanDLemus/capstone/main/config.json")
+  .then(res => res.json())
+  .then(config => {
+    if (config.lm_studio_url) {
+      LM_STUDIO_URL = config.lm_studio_url;
+    }
+  })
+  .catch(() => {});
 
 const RESPONSE_SCHEMA = {
   type: "json_schema",

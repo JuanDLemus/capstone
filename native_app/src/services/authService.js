@@ -1,10 +1,8 @@
-import axios from 'axios';
+import api from './api';
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
-
-// Use plain axios (no auth header) for login and register
+// Use dynamic api client (which updates base URL from config.json at startup)
 export const login = (email, password) =>
-  axios.post(`${BASE_URL}/auth/token/`, { email, password });
+  api.post('/auth/token/', { email, password });
 
 export const register = (data) =>
-  axios.post(`${BASE_URL}/auth/register/`, data);
+  api.post('/auth/register/', data);
