@@ -2,7 +2,7 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
 let BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? '';
-const CONFIG_URL = 'https://raw.githubusercontent.com/JuanDLemus/capstone/main/config.json?t=' + Date.now();
+const CONFIG_BASE = 'https://raw.githubusercontent.com/JuanDLemus/capstone/main/config.json';
 
 // In-memory token cache — populated at app startup from SecureStore
 let _accessToken = null;
@@ -38,7 +38,8 @@ const api = axios.create({
 
 export async function initializeBaseUrl() {
   try {
-    const res = await axios.get(CONFIG_URL, { timeout: 3000 });
+    const url = CONFIG_BASE + '?t=' + Date.now();
+    const res = await axios.get(url, { timeout: 3000 });
     if (res.data && res.data.api_base_url) {
       BASE_URL = res.data.api_base_url;
       api.defaults.baseURL = BASE_URL;

@@ -21,7 +21,7 @@ export default function ForgotPWScreen({ navigation }) {
         </TouchableOpacity>
 
         <View style={styles.main}>
-          <Text style={styles.emoji}>{sent ? "✉️" : "🔑"}</Text>
+          <Text style={styles.emoji}>{sent ? "INBOX" : "RESET"}</Text>
           <Text style={styles.title}>
             {sent ? "Check your inbox" : "Forgot password?"}
           </Text>
@@ -98,7 +98,11 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   emoji: {
-    fontSize: 60,
+    fontSize: 16,
+    fontFamily: T.fontNunito,
+    fontWeight: T.w9,
+    color: T.primary,
+    letterSpacing: 2,
     marginBottom: 24,
   },
   title: {

@@ -83,7 +83,13 @@ function OptionCard({ id, icon, title, subtitle, badge, selected, onClick }) {
         width: "100%",
       }}
     >
-      <span style={{ fontSize: 36 }}>{icon}</span>
+      <div style={{
+        width: 52, height: 52, borderRadius: 14, flexShrink: 0,
+        background: "rgba(168,85,247,0.1)", border: "1px solid rgba(168,85,247,0.25)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontFamily: "JetBrains Mono, monospace", fontSize: 12, fontWeight: 700,
+        color: "#a855f7", letterSpacing: 0.5,
+      }}>{icon}</div>
       <div style={{ flex: 1 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
           <span style={{ fontFamily: "Sora, sans-serif", fontWeight: 700, fontSize: 17, color: "#fff" }}>{title}</span>
@@ -248,24 +254,24 @@ export default function Download() {
         <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 48 }}>
           <OptionCard
             id="expo"
-            icon=""
+            icon="QR"
             title="Expo Go"
-            subtitle="Scan the ASCII QR code with the Expo Go app. Works on Android and iOS. Perfect for 4G/5G testing via Expo Tunnel."
+            subtitle="Scan the QR code with the Expo Go app. Works on Android and iOS. Perfect for 4G/5G testing via Expo Tunnel."
             badge="Recommended"
             selected={selected === "expo"}
             onClick={setSelected}
           />
           <OptionCard
             id="apk"
-            icon=""
+            icon="APK"
             title="Download APK"
-            subtitle="Install the APK directly on your Android device. No Expo Go needed — standalone app."
+            subtitle="Install the APK directly on your Android device. No Expo Go needed - standalone app."
             selected={selected === "apk"}
             onClick={setSelected}
           />
           <OptionCard
             id="iphone"
-            icon=""
+            icon="iOS"
             title="iPhone instructions"
             subtitle="Use Expo Go from the App Store and scan the QR code."
             selected={selected === "iphone"}
