@@ -141,7 +141,7 @@ export default function Download() {
 
   /* FETCH LIVE CONFIG */
   useEffect(() => {
-    fetch(CONFIG_URL)
+    fetch(CONFIG_URL + "?t=" + Date.now())
       .then(r => r.json())
       .then(cfg => {
         if (cfg.expo_ascii_qr) setExpoAsciiQr(cfg.expo_ascii_qr);
@@ -305,8 +305,15 @@ export default function Download() {
                 </>
               )}
               {(phase === "reveal" || phase === "content") && (
-                <div style={{ padding: "28px 24px" }}>
-                  <div className="ascii-qr">{expoAsciiQr}</div>
+                <div style={{ padding: "28px 24px", display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+                  <img 
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&color=a855f7&bgcolor=050505&data=${encodeURIComponent(expoUrl)}`}
+                    alt="Expo Go QR Code"
+                    style={{ width: 220, height: 220, borderRadius: 16, border: "2px solid rgba(168,85,247,0.3)", boxShadow: "0 0 30px rgba(168,85,247,0.15)" }}
+                  />
+                  <div style={{ fontSize: 11, fontFamily: "JetBrains Mono, monospace", color: "rgba(255,255,255,0.45)", wordBreak: "break-all", maxWidth: 280, textAlign: "center" }}>
+                    {expoUrl}
+                  </div>
                 </div>
               )}
             </div>
