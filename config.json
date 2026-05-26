@@ -1,6 +1,6 @@
-{
-  "api_base_url": "https://heavy-pumas-float.loca.lt/api/v1",
-  "expo_tunnel_url": "",
-  "expo_ascii_qr": "",
-  "apk_download_url": "https://capstone-orcin-omega.vercel.app/app-release.apk"
+﻿{
+    "api_base_url":  "https://sharp-wolves-help.loca.lt/api/v1",
+    "expo_tunnel_url":  "",
+    "expo_ascii_qr":  "",
+    "apk_download_url":  "https://capstone-orcin-omega.vercel.app/app-release.apk"
 }
