@@ -3,8 +3,10 @@ import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, ScrollView, Swi
 import { StatusBar } from 'expo-status-bar';
 import { User, Bell, MapPin, WifiOff, Shield, LogOut, ChevronRight, Moon } from 'lucide-react-native';
 import { T } from '@/theme';
+import { useAuth } from '@/context/AuthContext';
 
 export default function SettingsScreen({ navigation }) {
+  const { logout, user } = useAuth();
   const [dark, setDark] = React.useState(false);
   const [notifs, setNotifs] = React.useState(true);
 
@@ -52,7 +54,7 @@ export default function SettingsScreen({ navigation }) {
 
       <ScrollView contentContainerStyle={styles.content}>
         <Section title="Account">
-          <Item icon={User} label="Profile Information" value="Juan Lemus" />
+          <Item icon={User} label="Profile Information" value={user?.full_name ?? 'User'} />
           <Item icon={Shield} label="Security & Privacy" />
         </Section>
 
@@ -88,7 +90,7 @@ export default function SettingsScreen({ navigation }) {
           <Item icon={Shield} label="Privacy Policy" />
         </Section>
 
-        <TouchableOpacity style={styles.logoutBtn}>
+        <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
           <LogOut size={20} color={T.danger} />
           <Text style={styles.logoutText}>Log Out</Text>
         </TouchableOpacity>

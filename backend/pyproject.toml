@@ -1,0 +1,17 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Local temporary backend for EchoVolt QA"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "pydantic-settings",
+    "python-multipart",
+    "sqlalchemy",
+    "alembic",
+    "passlib[bcrypt]",
+    "pyjwt",
+    "email-validator"
+]

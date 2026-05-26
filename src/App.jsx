@@ -145,7 +145,7 @@ body{font-family:var(--fn);background:url('https://images.unsplash.com/photo-155
 /* 
  GLOBAL AI CONSTANTS
  */
-const LM_STUDIO_URL = "http://192.168.20.189:1234/v1/chat/completions";
+const LM_STUDIO_URL = "http://127.0.0.1:1234/api/v1/chat";
 
 const RESPONSE_SCHEMA = {
   type: "json_schema",
@@ -180,19 +180,15 @@ APP WORKFLOW CONTEXT:
 EchoVolt is a cognitive accessibility app. If the user indicates extreme anxiety or panic, suggest navigating to the "Breathing Exercise" or "Emergency Dial" modules. If they indicate a medication issue, suggest checking the "Medication Hub".
 `;
 
+  // Stringify previous history since the custom endpoint might only take a single 'input'
+  const historyText = conversationMessages.length > 0 
+    ? "Conversation History:\n" + conversationMessages.map(m => `${m.sender}: ${m.text}`).join("\n") + "\n\nUser:" 
+    : "";
+
   const payload = {
-    model: "local-model",
-    messages: [
-      {
-        role: "system",
-        content: `You operate as EchoVolt API. You MUST output ONLY raw JSON without any markdown formatting. Follow this EXACT format: {"reply":"your short response","summary":"3 words","intent":"navigation intent"}. Do not add any conversational text before or after the JSON block. RAG Context:\n${simulatedRAG}`
-      },
-      ...conversationMessages,
-      { role: "user", content: userText }
-    ],
-    temperature: 0.1,
-    max_tokens: -1,
-    stream: false
+    model: "openai/gpt-oss-20b",
+    system_prompt: `You operate as EchoVolt API. You MUST output ONLY raw JSON without any markdown formatting. Follow this EXACT format: {"reply":"your short response","summary":"3 words","intent":"navigation intent"}. Do not add any conversational text before or after the JSON block. RAG Context:\n${simulatedRAG}`,
+    input: `${historyText} ${userText}`
   };
 
   const res = await fetch(LM_STUDIO_URL, {
@@ -209,7 +205,9 @@ EchoVolt is a cognitive accessibility app. If the user indicates extreme anxiety
   }
 
   const data = await res.json();
-  let raw = data?.choices?.[0]?.message?.content ?? "";
+  
+  // Extract response based on standard custom chat endpoint schemas, or fallback to choices array
+  let raw = data?.response ?? data?.reply ?? data?.text ?? data?.choices?.[0]?.message?.content ?? "";
   
   // Clean potential markdown blocks
   raw = raw.replace(/```json/gi, "").replace(/```/g, "").trim();

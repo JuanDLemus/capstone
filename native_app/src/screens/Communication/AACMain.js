@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, Zap, Delete } from 'lucide-react-native';
+import { ChevronLeft, Zap, Delete, Mic } from 'lucide-react-native';
 import { T } from '@/theme';
+import { useAuth } from '@/context/AuthContext';
+import { getStrings } from '@/services/strings';
 
 const FITZ_CATS = [
   { l: "PRONOUNS", bg: T.aacY, w: ["I", "You", "He", "She", "We", "They", "It", "Me"] },
@@ -25,7 +27,11 @@ const QUICK_PHRASES = [
   { l: "I don't know", bg: T.aacR }
 ];
 
-export default function AACMainScreen({ navigation }) {
+export default function AACMainScreen({ navigation, route }) {
+  const history = route?.params?.history ?? [];
+  const { user } = useAuth();
+  const strings = getStrings(user);
+
   const [words, setWords] = useState([]);
   const [activeCat, setActiveCat] = useState(null);
 
@@ -37,38 +43,12 @@ export default function AACMainScreen({ navigation }) {
     setWords(words.slice(0, -1));
   };
 
-  const clearAll = () => {
-    setWords([]);
-  };
-
   const handleSave = () => {
     const query = words.map(w => w.l).join(" ");
     if (query) {
-      navigation.navigate('VoiceProc', { query });
+      navigation.navigate('VoiceProc', { transcript: query, isAac: true, history });
     }
   };
-
-  const renderCategory = ({ item }) => (
-    <TouchableOpacity 
-      style={[styles.aacCard, { backgroundColor: item.bg, borderColor: item.brd || 'transparent' }]} 
-      onPress={() => setActiveCat(item)}
-    >
-      <Text style={[styles.aacWord, { color: item.bg === T.aacY || item.bg === T.aacW ? T.n900 : '#fff' }]}>
-        {item.l}
-      </Text>
-    </TouchableOpacity>
-  );
-
-  const renderWord = ({ item }) => (
-    <TouchableOpacity 
-      style={[styles.aacCard, { backgroundColor: activeCat.bg, borderColor: activeCat.brd || 'transparent', minHeight: 80 }]} 
-      onPress={() => addWord(item, activeCat.bg)}
-    >
-      <Text style={[styles.aacWord, { color: activeCat.bg === T.aacY || activeCat.bg === T.aacW ? T.n900 : '#fff' }]}>
-        {item}
-      </Text>
-    </TouchableOpacity>
-  );
 
   let interpreted = "";
   const wStr = words.map(w => w.l).join(" ").toLowerCase();
@@ -80,11 +60,23 @@ export default function AACMainScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* Message Builder Bar */}
+      {/* HEADER */}
+      <View style={styles.screenHeader}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerBackBtn}>
+          <ChevronLeft size={24} color={T.n900} />
+          <Text style={styles.headerBackText}>{strings.back}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('VoiceListen', { history })} style={styles.headerVoiceBtn}>
+          <Mic size={18} color={T.primary} />
+          <Text style={styles.headerVoiceText}>{strings.use_voice}</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* BUILDER BAR */}
       <View style={styles.builderBar}>
         <View style={styles.builderInner}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.wordsRow}>
-            {words.length === 0 && <Text style={styles.placeholder}>Build your message...</Text>}
+            {words.length === 0 && <Text style={styles.placeholder}>{strings.build_message_placeholder}</Text>}
             {words.map((w, i) => (
               <View key={i} style={[styles.wordChip, { backgroundColor: w.bg || T.n300 }]}>
                 <Text style={[styles.wordChipText, { color: w.bg === T.aacY || w.bg === T.aacW ? T.n900 : '#fff' }]}>{w.l}</Text>
@@ -95,7 +87,7 @@ export default function AACMainScreen({ navigation }) {
             <Delete size={20} color={T.danger} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-            <Text style={styles.saveBtnText}>SEND</Text>
+            <Text style={styles.saveBtnText}>{strings.send}</Text>
           </TouchableOpacity>
         </View>
         {interpreted ? (
@@ -109,7 +101,7 @@ export default function AACMainScreen({ navigation }) {
       <ScrollView style={styles.board}>
         {!activeCat ? (
           <View style={styles.paddingContainer}>
-            <Text style={styles.sectionTitle}>Categories</Text>
+            <Text style={styles.sectionTitle}>{strings.categories}</Text>
             <View style={styles.grid}>
               {FITZ_CATS.map((item) => (
                 <TouchableOpacity 
@@ -124,7 +116,7 @@ export default function AACMainScreen({ navigation }) {
               ))}
             </View>
 
-            <Text style={styles.sectionTitle}>Quick Phrases</Text>
+            <Text style={styles.sectionTitle}>{strings.quick_phrases}</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
               {QUICK_PHRASES.map((q) => (
                 <TouchableOpacity 
@@ -137,7 +129,7 @@ export default function AACMainScreen({ navigation }) {
               ))}
             </ScrollView>
 
-            <Text style={styles.sectionTitle}>Core Words</Text>
+            <Text style={styles.sectionTitle}>{strings.core_words}</Text>
             <View style={styles.grid}>
               {CORE_WORDS.map((cw) => (
                 <TouchableOpacity 
@@ -155,7 +147,7 @@ export default function AACMainScreen({ navigation }) {
             <View style={styles.catHeader}>
               <TouchableOpacity onPress={() => setActiveCat(null)} style={styles.backBtn}>
                 <ChevronLeft size={24} color={T.primary} />
-                <Text style={styles.backBtnText}>Categories</Text>
+                <Text style={styles.backBtnText}>{strings.categories}</Text>
               </TouchableOpacity>
               <View style={[styles.catBadge, { backgroundColor: activeCat.bg }]}>
                 <Text style={[styles.catBadgeText, { color: activeCat.bg === T.aacY || activeCat.bg === T.aacW ? T.n900 : '#fff' }]}>{activeCat.l}</Text>
@@ -178,7 +170,6 @@ export default function AACMainScreen({ navigation }) {
           </View>
         )}
       </ScrollView>
-
     </SafeAreaView>
   );
 }
@@ -187,6 +178,42 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: T.n100,
+  },
+  screenHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: T.surf,
+    borderBottomWidth: 1,
+    borderBottomColor: T.n300,
+  },
+  headerBackBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  headerBackText: {
+    fontFamily: T.fontNunito,
+    fontSize: 15,
+    fontWeight: T.w9,
+    color: T.n900,
+  },
+  headerVoiceBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: T.primarySoft,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  headerVoiceText: {
+    fontFamily: T.fontNunito,
+    fontSize: 13,
+    fontWeight: T.w9,
+    color: T.primary,
   },
   builderBar: {
     padding: 12,

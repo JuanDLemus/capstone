@@ -16,6 +16,7 @@ import {
 } from '@expo-google-fonts/sora';
 import AppNavigator from './src/navigation/AppNavigator';
 import { AuthProvider } from './src/context/AuthContext';
+import { initializeBaseUrl } from './src/services/api';
 
 export default function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -23,6 +24,7 @@ export default function App() {
   useEffect(() => {
     async function loadFonts() {
       try {
+        await initializeBaseUrl();
         await Font.loadAsync({
           Nunito_400Regular,
           Nunito_600SemiBold,

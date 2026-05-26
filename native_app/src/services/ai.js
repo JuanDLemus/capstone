@@ -1,56 +1,57 @@
-const LM_STUDIO_URL = "http://192.168.20.189:1234/v1/chat/completions";
+import api from './api';
 
-const SIMULATED_RAG = `
-PATIENT FILE:
-Name: Maria.
-Conditions: Clinical Depression (PHQ-9 Score: 16 - Mod-Severe), Generalized Anxiety (GAD-7 Score: 16 - Severe).
-Current Medications: Sertraline 50mg.
-Recent Trends: Overall stress improving. Vocal pacing was speaking faster today (possible anxiety cue).
-APP WORKFLOW CONTEXT:
-EchoVolt is a cognitive accessibility app. If the user indicates extreme anxiety or panic, suggest navigating to the "Breathing Exercise" or "Emergency Dial" modules. If they indicate a medication issue, suggest checking the "Medication Hub".
-`;
+// JSON EXTRACTOR
+function extractJson(text) {
+  if (!text || text.trim().length === 0) return null;
+  const clean = text.replace(/```json/gi, '').replace(/```/g, '').trim();
 
-export async function sendToModel(userText, conversationMessages = []) {
-  const payload = {
-    model: "local-model",
-    messages: [
-      {
-        role: "system",
-        content: `You operate as EchoVolt API. You MUST output ONLY raw JSON without any markdown formatting. Follow this EXACT format: {"reply":"your short response","summary":"3 words","intent":"navigation intent"}. Do not add any conversational text before or after the JSON block. RAG Context:\n${SIMULATED_RAG}`
-      },
-      ...conversationMessages,
-      { role: "user", content: userText }
-    ],
-    temperature: 0.1,
-    max_tokens: 500, // Reduced from -1 for safety in mobile
-    stream: false
-  };
+  const braceIdx = clean.indexOf('{');
+  const lastBrace = clean.lastIndexOf('}');
+  if (braceIdx !== -1 && lastBrace !== -1 && lastBrace > braceIdx) {
+    try {
+      return JSON.parse(clean.slice(braceIdx, lastBrace + 1));
+    } catch {}
+  }
 
   try {
-    const res = await fetch(LM_STUDIO_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    return JSON.parse(clean);
+  } catch {}
 
-    const data = await res.json();
-    const content = data.choices[0].message.content;
-    
-    // Attempt to parse JSON from content
-    try {
-      return JSON.parse(content);
-    } catch (e) {
-      // Fallback if model doesn't return clean JSON
-      return {
-        reply: content,
-        summary: "Response received",
-        intent: "general"
-      };
-    }
-  } catch (error) {
-    console.error("AI Service Error:", error);
-    throw error;
-  }
+  return null;
+}
+
+// SEND MESSAGE TO MODEL VIA BACKEND PROXY
+export async function sendToModel(userText, conversationMessages = [], isAac = false) {
+  // HISTORY MAPPING
+  const historyMessages = conversationMessages.map(m => ({
+    role: m.sender === 'user' ? 'user' : 'assistant',
+    content: m.text,
+  }));
+
+  const allMessages = [
+    ...historyMessages,
+    { role: 'user', content: userText },
+  ];
+
+  // STRUCTURED REQUEST — backend owns system prompt and RAG context
+  const res = await api.post('/ai/chat/', {
+    messages: allMessages,
+    is_aac: isAac,
+  });
+
+  const data = res.data;
+  const choice = data?.choices?.[0];
+  const content = choice?.message?.content ?? '';
+  const reasoning = choice?.message?.reasoning ?? '';
+
+  const parsed = extractJson(content) ?? extractJson(reasoning);
+
+  if (parsed) return parsed;
+
+  const fallbackText = content.trim() || reasoning.replace(/\{.*\}/s, '').trim().slice(0, 200);
+  return {
+    reply: fallbackText || 'I received your message but could not generate a response.',
+    summary: 'AI Response',
+    intent: 'general',
+  };
 }

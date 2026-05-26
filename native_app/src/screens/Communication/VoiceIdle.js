@@ -4,14 +4,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Mic, FileText, Layers } from 'lucide-react-native';
 import { T } from '@/theme';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAuth } from '@/context/AuthContext';
+import { getStrings } from '@/services/strings';
 
 export default function VoiceIdleScreen({ navigation }) {
   const [trans, setTrans] = useState(false);
+  const { user } = useAuth();
+  const strings = getStrings(user);
 
   const handleMicPress = () => {
     setTrans(true);
     setTimeout(() => {
-      navigation.navigate('VoiceListen');
+      navigation.navigate('VoiceListen', { history: [] });
       setTrans(false);
     }, 800);
   };
@@ -22,8 +26,8 @@ export default function VoiceIdleScreen({ navigation }) {
         
         {/* Header Title */}
         <View style={[styles.headerContainer, { opacity: trans ? 0 : 1 }]}>
-          <Text style={styles.title}>How are you doing?</Text>
-          <Text style={styles.subtitle}>Tap to talk, or choose another input method</Text>
+          <Text style={styles.title}>{strings.idle_title}</Text>
+          <Text style={styles.subtitle}>{strings.idle_subtitle}</Text>
         </View>
 
         {/* Central Mic Button */}
@@ -47,12 +51,12 @@ export default function VoiceIdleScreen({ navigation }) {
         <View style={[styles.bottomActions, { opacity: trans ? 0 : 1 }]}>
           <TouchableOpacity style={styles.actionBtn} onPress={() => {}}>
             <FileText size={16} color={T.n700} />
-            <Text style={styles.actionBtnText}>Questions</Text>
+            <Text style={styles.actionBtnText}>{strings.questions}</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate('AACMain')}>
+          <TouchableOpacity style={styles.actionBtn} onPress={() => navigation.navigate('AACMain', { history: [] })}>
             <Layers size={16} color={T.n700} />
-            <Text style={styles.actionBtnText}>AAC Cards</Text>
+            <Text style={styles.actionBtnText}>{strings.aac_cards}</Text>
           </TouchableOpacity>
         </View>
 

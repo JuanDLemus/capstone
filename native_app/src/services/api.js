@@ -1,7 +1,8 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+let BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? '';
+const CONFIG_URL = 'https://raw.githubusercontent.com/JuanDLemus/capstone/main/config.json';
 
 // In-memory token cache — populated at app startup from SecureStore
 let _accessToken = null;
@@ -18,6 +19,10 @@ export function clearTokens() {
   _refreshToken = null;
 }
 
+export function getAccessToken() {
+  return _accessToken;
+}
+
 export function setUnauthorizedHandler(fn) {
   _onUnauthorized = fn;
 }
@@ -27,6 +32,19 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
   timeout: 10000,
 });
+
+export async function initializeBaseUrl() {
+  try {
+    const res = await axios.get(CONFIG_URL, { timeout: 3000 });
+    if (res.data && res.data.api_base_url) {
+      BASE_URL = res.data.api_base_url;
+      api.defaults.baseURL = BASE_URL;
+      console.log('Successfully initialized active API base URL from GitHub raw config:', BASE_URL);
+    }
+  } catch (err) {
+    console.log('Failed to fetch dynamic API URL from GitHub, using env fallback:', BASE_URL);
+  }
+}
 
 api.interceptors.request.use((config) => {
   if (_accessToken) {
