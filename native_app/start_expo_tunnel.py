@@ -7,20 +7,10 @@ import time
 import io
 import qrcode
 
-# NGROK FREE-TIER URL PATTERN — matches ngrok-free.app and ngrok-free.dev
-NGROK_URL_RE = re.compile(r'url=(https://[a-zA-Z0-9-]+\.ngrok-free\.[a-z]+)')
-
 # EXPO TUNNEL URL PATTERN — excludes LAN/loopback addresses
 EXPO_URL_RE = re.compile(r'((?:exp|exps)://[a-zA-Z0-9.-]+(?::\d+)?(?:/[a-zA-Z0-9./_-]*)?)')
 
 
-# PARSE NGROK URL FROM LOG LINE
-def parse_ngrok_url(line: str) -> str | None:
-    match = NGROK_URL_RE.search(line)
-    return match.group(1) if match else None
-
-
-# PARSE EXPO TUNNEL URL FROM LOG LINE
 def parse_expo_url(line: str) -> str | None:
     match = EXPO_URL_RE.search(line)
     if match:
@@ -45,16 +35,6 @@ def kill_proc(proc: subprocess.Popen | None) -> None:
             proc.terminate()
         except Exception:
             pass
-
-
-# START NGROK TUNNEL ON PORT 8081
-def start_ngrok() -> subprocess.Popen:
-    return subprocess.Popen(
-        ["ngrok", "http", "8081", "--log=stdout"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-    )
 
 
 # START EXPO WITH NATIVE TUNNEL (generates real WAN exp:// URL)
